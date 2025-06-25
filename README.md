@@ -50,7 +50,7 @@ The **CPG-SPMT: Control-oriented Parameter-Grouped Single Particle Model with Th
   The **parabolic approximation method** is used to discretize the PDE that describes lithium diffusion in the electrode, converting it into a tractable **state-space model**.
 
 - **Battery Parameter Grouping:**  
-  The model groups related parameters, reducing the number of independent parameters required while maintaining accuracy in simulations. The CPG-SPMT model uses **14 parameters total** compared to the original SPM model's 22 parameters, achieving a **reduction of 8 parameters**:
+  The model groups related parameters, reducing the number of independent parameters required while maintaining accuracy in simulations. The CPG-SPMT model uses **14 parameters total**:
   
   **9 Core SPM Parameters:**
   - `a_n_1`, `a_p_1`: Negative and positive electrode reference parameters
@@ -274,7 +274,7 @@ The error distribution analysis shows consistent performance across different te
 
 ## 🔋 Battery Data Source
 
-The experimental validation data used in this project is sourced from the **University of Maryland Battery Laboratory (CALCE)**, which provides open access to comprehensive lithium-ion battery test data for research purposes.
+The experimental validation data used in this project is sourced from the **University of Maryland Battery Laboratory (CALCE)**.
 
 ### Data Source Information
 - **Institution**: [CALCE Battery Research Group, University of Maryland](https://calce.umd.edu/battery-data)
