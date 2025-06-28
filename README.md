@@ -53,11 +53,11 @@ The **CPG-SPMT: Control-oriented Parameter-Grouped Single Particle Model with Th
   The model groups related parameters, reducing the number of independent parameters required while maintaining accuracy in simulations. The CPG-SPMT model uses **14 parameters total**:
   
   **9 Core SPM Parameters:**
-  - `a_n_1`, `a_p_1`: Negative and positive electrode reference parameters
-  - `b_n`, `b_p`: Negative and positive electrode time constants  
-  - `d_n_1`, `d_p_1`: Negative and positive electrode reference diffusion parameters
+  - `a_n_1`, `a_p_1`: Negative and positive electrode time constants at 25°C
+  - `b_n`, `b_p`: Negative and positive electrode capacity  
+  - `d_n_1`, `d_p_1`: Negative and positive electrode grouped parameters at 25°C
   - `soc_n`, `soc_p`: Initial negative and positive electrode SOC values
-  - `R_ini_1`: Reference internal resistance
+  - `R_ini_1`: Reference internal resistance at 25°C
   
   **5 Temperature-dependent Parameters (Activation Energies):**
   - `E_1`, `E_2`: Activation energies for negative and positive electrode kinetics

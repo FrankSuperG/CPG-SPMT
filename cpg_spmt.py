@@ -283,12 +283,12 @@ def cpg_spmt(I, T, param=None):
     # Default Parameters (Optimized for high-energy Li-ion cell)
     # ═══════════════════════════════════════════════════════════════════════════
     default_param = [
-        2696.826595,    # a_n_1: Negative electrode reference parameter
-        1352.428491,    # a_p_1: Positive electrode reference parameter  
-        10999.93219,    # b_n: Negative electrode time constant
-        3982.261084,    # b_p: Positive electrode time constant
-        0.005475,       # d_n_1: Negative electrode reference diffusion parameter
-        0.000343,       # d_p_1: Positive electrode reference diffusion parameter
+        2696.826595,    # a_n_1: Negative electrode time constants at 25°C
+        1352.428491,    # a_p_1: Positive electrode time constants at 25°C 
+        10999.93219,    # b_n: Negative electrode capacity
+        3982.261084,    # b_p: Positive electrode capacity
+        0.005475,       # d_n_1: Negative electrode grouped parameter at 25°C
+        0.000343,       # d_p_1: Positive electrode grouped parameter at 25°C
         0.382917,       # soc_n: Initial negative electrode SOC
         0.000282,       # soc_p: Initial positive electrode SOC
         44042.21814,    # E_1: Activation energy for a_n (J/mol)
@@ -296,7 +296,7 @@ def cpg_spmt(I, T, param=None):
         133074.8646,    # E_3: Activation energy for d_n (J/mol)
         14397.71388,    # E_4: Activation energy for d_p (J/mol)
         4097.712369,    # E_5: Activation energy for R_ini (J/mol)
-        0.173289        # R_ini_1: Reference internal resistance (Ω)
+        0.173289        # R_ini_1: Reference internal resistance at 25°C (Ω)
     ]
     
     # Parameter validation and assignment
