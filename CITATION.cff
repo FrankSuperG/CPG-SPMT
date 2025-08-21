@@ -1,0 +1,17 @@
+cff-version: 1.1.0
+message: "If you use this software, please cite it as below."
+authors:
+- family-names: Guo
+  given-names: Feng
+  orcid: https://orcid.org/0000-0002-5141-8672
+title: "CPG-SPMT: An Open-source Implementation of the Control-oriented Parameter-Grouped Single Particle Model with Thermal Effects"
+version: "v1.0.0"
+doi: 10.5281/zenodo.16921607
+date-released: 2025-08-21
+url: "https://github.com/FrankSuperG/CPG-SPMT"
+license: "Apache License 2.0"
+keywords:
+  - lithium-ion battery
+  - electrochemical model
+  - single particle model
+  - thermal modeling
