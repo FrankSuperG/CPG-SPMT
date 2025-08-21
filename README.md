@@ -38,7 +38,7 @@
 
 ## Overview
 
-The **CPG-SPMT: Control-oriented Parameter-Grouped Single Particle Model with Thermal effects** uses a **Padé approximation method** to discretize the SPM's governing PDE, thereby transforming the PDE into a set of ordinary differential equations (ODEs) that can be efficiently integrated over time. This approach reduces computational complexity while preserving the essential dynamics of the battery. Furthermore, the model applies **battery parameter grouping**, reducing the number of required parameters while maintaining accuracy. The model is designed to be both **observable** and **controllable**, which is crucial for applications in **battery state estimation** and **control design** within advanced battery management systems.
+The **CPG-SPMT: Control-oriented Parameter-Grouped Single Particle Model with Thermal effects** uses a **parabolic approximation method** to discretize the SPM's governing PDE, thereby transforming the PDE into a set of ordinary differential equations (ODEs) that can be efficiently integrated over time. This approach reduces computational complexity while preserving the essential dynamics of the battery. Furthermore, the model applies **battery parameter grouping**, reducing the number of required parameters while maintaining accuracy. The model is designed to be both **observable** and **controllable**, which is crucial for applications in **battery state estimation** and **control design** within advanced battery management systems.
 
 
 
