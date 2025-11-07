@@ -4,6 +4,8 @@ authors:
 - family-names: Guo
   given-names: Feng
   orcid: https://orcid.org/0000-0002-5141-8672
+- family-names: Couto
+  given-names: Luis D.
 title: "CPG-SPMT: An Open-source Implementation of the Control-oriented Parameter-Grouped Single Particle Model with Thermal Effects"
 version: "v1.0.0"
 doi: 10.5281/zenodo.16921607
@@ -15,3 +17,40 @@ keywords:
   - electrochemical model
   - single particle model
   - thermal modeling
+references:
+  - type: article
+    authors:
+      - family-names: Guo
+        given-names: Feng
+      - family-names: Couto
+        given-names: Luis D.
+    title: "CPG-SPMT: Control-Oriented Parameter-Grouped Single Particle Model with Thermal Effects for Lithium-Ion Batteries"
+    year: 2025
+    url: "https://ssrn.com/abstract=5344067"
+    doi: "10.2139/ssrn.5344067"
+  - type: article
+    authors:
+      - family-names: Guo
+        given-names: Feng
+      - family-names: Couto
+        given-names: Luis D.
+    title: "A control-oriented simplified Single Particle Model with grouped parameter and sensitivity analysis for lithium-ion batteries"
+    journal: "Journal of Power Sources"
+    volume: 649
+    pages: "237309"
+    year: 2025
+    publisher:
+      name: "Elsevier"
+  - type: article
+    authors:
+      - family-names: Guo
+        given-names: Feng
+      - family-names: Couto
+        given-names: Luis D.
+    title: "Comparative performance analysis of numerical discretization methods for electrochemical model of lithium-ion batteries"
+    journal: "Journal of Power Sources"
+    volume: 650
+    pages: "237365"
+    year: 2025
+    publisher:
+      name: "Elsevier"

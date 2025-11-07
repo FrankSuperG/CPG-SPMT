@@ -331,6 +331,9 @@ Validation results output folder:
 
 If you use this model in your research or projects, please cite the following papers:
 
+**Software Implementation Reference:**
+> Guo, Feng and Couto, Luis D. "CPG-SPMT: Control-Oriented Parameter-Grouped Single Particle Model with Thermal Effects for Lithium-Ion Batteries." *Available at SSRN*: https://ssrn.com/abstract=5344067 or http://dx.doi.org/10.2139/ssrn.5344067
+
 **Primary Reference:**
 > Guo, Feng, and Luis D. Couto. "A control-oriented simplified Single Particle Model with grouped parameter and sensitivity analysis for lithium-ion batteries." *Journal of Power Sources* 649 (2025): 237309.
 
@@ -339,6 +342,14 @@ If you use this model in your research or projects, please cite the following pa
 
 **BibTeX Format:**
 ```bibtex
+@article{guo2025software,
+  title={CPG-SPMT: Control-Oriented Parameter-Grouped Single Particle Model with Thermal Effects for Lithium-Ion Batteries},
+  author={Guo, Feng and Couto, Luis D.},
+  note={Available at SSRN: \url{https://ssrn.com/abstract=5344067}},
+  doi={10.2139/ssrn.5344067},
+  year={2025}
+}
+
 @article{guo2025cpg,
   title={A control-oriented simplified Single Particle Model with grouped parameter and sensitivity analysis for lithium-ion batteries},
   author={Guo, Feng and Couto, Luis D.},
