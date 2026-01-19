@@ -47,7 +47,7 @@ The **CPG-SPMT: Control-oriented Parameter-Grouped Single Particle Model with Th
 ### Core features
 
 - **PDE Discretization with Parabolic Approximation:**  
-  The **parabolic approximation method** is used to discretize the PDE that describes lithium diffusion in the electrode, converting it into a tractable **state-space model**.
+  The **parabolic approximation method** is used to discretize the PDE that describes lithium diffusion in the electrode, converting it into a tractable **state-space model**. It achieves accuracy comparable to the implicit Euler FDM with 72 nodes while being over **100× faster** in computational efficiency (guo2025comparative).
 
 - **Battery Parameter Grouping:**  
   The model groups related parameters, reducing the number of independent parameters required while maintaining accuracy in simulations. The CPG-SPMT model uses **14 parameters total**:
@@ -402,7 +402,7 @@ This project is released under the **[Apache License 2.0](Apache_License.md)**.
 ### Technical Support
 - 🐛 Bug reports: Please contact via email
 - 💡 Feature suggestions: Welcome improvement suggestions
-- 🤝 Collaboration opportunities: Open to academic and industrial partnerships
+- 🤝 Collaboration opportunities: I can support **parameter identification** using your provided battery test data, and welcome academic/industrial partnerships including joint paper writing.
 - 📖 **Academic Use**: Please remember to [cite our publications](#-citation) when using this model
 
 ---

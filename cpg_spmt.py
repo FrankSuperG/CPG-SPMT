@@ -246,7 +246,7 @@ def cpg_spmt(I, T, param=None):
     Parameters
     ----------
     I : array-like
-        Current profile over time (A). Positive for discharge, negative for charge.
+        Current profile over time (A). Negative for discharge, positive for charge.
     T : array-like
         Temperature profile over time (°C).
     param : list or tuple, optional
