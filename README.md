@@ -332,22 +332,24 @@ Validation results output folder:
 If you use this model in your research or projects, please cite the following papers:
 
 **Software Implementation Reference:**
-> Guo, Feng and Couto, Luis D. "CPG-SPMT: Control-Oriented Parameter-Grouped Single Particle Model with Thermal Effects for Lithium-Ion Batteries." *Available at SSRN*: https://ssrn.com/abstract=5344067 or http://dx.doi.org/10.2139/ssrn.5344067
+> Guo, Feng, and Luis D. Couto. "CPG-SPMT: Control-Oriented Parameter-Grouped Single Particle Model with Thermal Effects for Lithium-Ion Batteries." *Computer Physics Communications* (2026): 110075. https://doi.org/10.1016/j.cpc.2026.110075
 
 **Primary Reference:**
-> Guo, Feng, and Luis D. Couto. "A control-oriented simplified Single Particle Model with grouped parameter and sensitivity analysis for lithium-ion batteries." *Journal of Power Sources* 649 (2025): 237309.
+> Guo, Feng, and Luis D. Couto. "A control-oriented simplified Single Particle Model with grouped parameter and sensitivity analysis for lithium-ion batteries." *Journal of Power Sources* 649 (2025): 237309. https://doi.org/10.1016/j.jpowsour.2025.237309
 
 **Numerical Method Reference:**
-> Guo, Feng, and Luis D. Couto. "Comparative performance analysis of numerical discretization methods for electrochemical model of lithium-ion batteries." *Journal of Power Sources* 650 (2025): 237365.
+> Guo, Feng, and Luis D. Couto. "Comparative performance analysis of numerical discretization methods for electrochemical model of lithium-ion batteries." *Journal of Power Sources* 650 (2025): 237365. https://doi.org/10.1016/j.jpowsour.2025.237365
 
 **BibTeX Format:**
 ```bibtex
-@article{guo2025software,
+@article{guo2026cpg,
   title={CPG-SPMT: Control-Oriented Parameter-Grouped Single Particle Model with Thermal Effects for Lithium-Ion Batteries},
   author={Guo, Feng and Couto, Luis D.},
-  note={Available at SSRN: \url{https://ssrn.com/abstract=5344067}},
-  doi={10.2139/ssrn.5344067},
-  year={2025}
+  journal={Computer Physics Communications},
+  pages={110075},
+  year={2026},
+  publisher={Elsevier},
+  doi={10.1016/j.cpc.2026.110075}
 }
 
 @article{guo2025cpg,
@@ -357,7 +359,8 @@ If you use this model in your research or projects, please cite the following pa
   volume={649},
   pages={237309},
   year={2025},
-  publisher={Elsevier}
+  publisher={Elsevier},
+  doi={10.1016/j.jpowsour.2025.237309}
 }
 
 @article{guo2025comparative,
@@ -367,7 +370,8 @@ If you use this model in your research or projects, please cite the following pa
   volume={650},
   pages={237365},
   year={2025},
-  publisher={Elsevier}
+  publisher={Elsevier},
+  doi={10.1016/j.jpowsour.2025.237365}
 }
 ```
 

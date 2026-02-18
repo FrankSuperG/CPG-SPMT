@@ -25,9 +25,12 @@ references:
       - family-names: Couto
         given-names: Luis D.
     title: "CPG-SPMT: Control-Oriented Parameter-Grouped Single Particle Model with Thermal Effects for Lithium-Ion Batteries"
-    year: 2025
-    url: "https://ssrn.com/abstract=5344067"
-    doi: "10.2139/ssrn.5344067"
+    journal: "Computer Physics Communications"
+    pages: "110075"
+    year: 2026
+    publisher:
+      name: "Elsevier"
+    doi: "10.1016/j.cpc.2026.110075"
   - type: article
     authors:
       - family-names: Guo
@@ -41,6 +44,7 @@ references:
     year: 2025
     publisher:
       name: "Elsevier"
+    doi: "10.1016/j.jpowsour.2025.237309"
   - type: article
     authors:
       - family-names: Guo
@@ -54,3 +58,4 @@ references:
     year: 2025
     publisher:
       name: "Elsevier"
+    doi: "10.1016/j.jpowsour.2025.237365"
