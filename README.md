@@ -9,7 +9,7 @@
 
 <div align="center" style="line-height: 1.5;">
   <a href="#"><img alt="Python" src="https://img.shields.io/badge/Python-3.x-blue.svg"/></a>
-  <a href="#"><img alt="License" src="https://img.shields.io/badge/License-Apache%202.0-blue.svg"/></a>
+  <a href="#"><img alt="License" src="https://img.shields.io/badge/License-PolyForm%20Noncommercial%201.0.0-orange.svg"/></a>
   <a href="#"><img alt="Status" src="https://img.shields.io/badge/Status-Validated-brightgreen.svg"/></a>
   <a href="#"><img alt="Author" src="https://img.shields.io/badge/Author-Feng_Guo-orange.svg"/></a>
   <a href="#"><img alt="Citation Required" src="https://img.shields.io/badge/Citation-Required-red.svg"/></a>
@@ -80,7 +80,7 @@ SPM/
 ├── model_validation.py            # Model validation script
 ├── README.md                      # Project documentation
 ├── cpg_spmt_logo.png              # Project logo
-├── Apache_License.md              # Apache 2.0 open source license
+├── LICENSE                        # PolyForm Noncommercial 1.0.0 license
 ├── data/                          # Experimental data
 │   ├── A1-007-DST-US06-FUDS-N10-20120829_modified.xlsx  # -10°C data
 │   ├── A1-007-DST-US06-FUDS-0-20120813_modified.xlsx    # 0°C data
@@ -380,17 +380,14 @@ If you use this model in your research or projects, please cite the following pa
 
 ## 📜 License
 
-This project is released under the **[Apache License 2.0](Apache_License.md)**.
+This project is released under the **[PolyForm Noncommercial 1.0.0](LICENSE)**.
 
 ### License Highlights
-- ✅ Commercial use
-- ✅ Modification and distribution
-- ✅ Private use
-- ✅ Patent protection
-- ✅ Trademark protection
-- ❗ Copyright notice required
-- ❗ License notice required
-- ❗ State changes required
+- ❌ Commercial use is not allowed without separate written permission
+- ✅ Noncommercial academic and research use
+- ✅ Modification and redistribution under license terms
+- ✅ Patent license included by licensor
+- ❗ Keep license terms and required notices
 - ❗ No warranty provided
 
 ---
@@ -401,7 +398,9 @@ This project is released under the **[Apache License 2.0](Apache_License.md)**.
 
 **Email**: feng.guo [at] vito [dot] be  
 
-**Institution**: VITO (Flemish Institute for Technological Research)
+**Homepage**: [franksuperg.github.io/feng-guo-academic](https://franksuperg.github.io/feng-guo-academic/)  
+
+**Google Scholar**: [scholar.google.com/citations?user=z2SHUxkAAAAJ&hl=en](https://scholar.google.com/citations?user=z2SHUxkAAAAJ&hl=en)
 
 ### Technical Support
 - 🐛 Bug reports: Please contact via email
