@@ -9,7 +9,7 @@
 
 <div align="center" style="line-height: 1.5;">
   <a href="#"><img alt="Python" src="https://img.shields.io/badge/Python-3.x-blue.svg"/></a>
-  <a href="#"><img alt="License" src="https://img.shields.io/badge/License-PolyForm%20Noncommercial%201.0.0-orange.svg"/></a>
+  <a href="LICENSE"><img alt="License: Apache-2.0" src="https://img.shields.io/badge/License-Apache%202.0-blue.svg"/></a>
   <a href="#"><img alt="Status" src="https://img.shields.io/badge/Status-Validated-brightgreen.svg"/></a>
   <a href="#"><img alt="Author" src="https://img.shields.io/badge/Author-Feng_Guo-orange.svg"/></a>
   <a href="#"><img alt="Citation Required" src="https://img.shields.io/badge/Citation-Required-red.svg"/></a>
@@ -80,7 +80,7 @@ SPM/
 ├── model_validation.py            # Model validation script
 ├── README.md                      # Project documentation
 ├── cpg_spmt_logo.png              # Project logo
-├── LICENSE                        # PolyForm Noncommercial 1.0.0 license
+├── LICENSE                        # Apache License 2.0
 ├── data/                          # Experimental data
 │   ├── A1-007-DST-US06-FUDS-N10-20120829_modified.xlsx  # -10°C data
 │   ├── A1-007-DST-US06-FUDS-0-20120813_modified.xlsx    # 0°C data
@@ -380,15 +380,15 @@ If you use this model in your research or projects, please cite the following pa
 
 ## 📜 License
 
-This project is released under the **[PolyForm Noncommercial 1.0.0](LICENSE)**.
+This project is licensed under the **[Apache License 2.0](LICENSE)**.
 
 ### License Highlights
-- ❌ Commercial use is not allowed without separate written permission
-- ✅ Noncommercial academic and research use
-- ✅ Modification and redistribution under license terms
-- ✅ Patent license included by licensor
-- ❗ Keep license terms and required notices
-- ❗ No warranty provided
+- ✅ Commercial, academic, and research use
+- ✅ Modification and redistribution under the license terms
+- ✅ Express patent license from contributors
+- ❗ Retain the license, copyright, and attribution notices
+- ❗ State significant changes to modified files
+- ❗ No warranty is provided
 
 ---
 
@@ -412,5 +412,5 @@ This project is released under the **[PolyForm Noncommercial 1.0.0](LICENSE)**.
 
 <div align="center">
   <p><strong>🔋 Making Battery Modeling Simpler, Energy Management Smarter!</strong></p>
-  <p><em>CPG-SPMT © 2025 Feng Guo. All rights reserved.</em></p>
+  <p><em>CPG-SPMT © 2025 Feng Guo. Licensed under Apache-2.0.</em></p>
 </div>
