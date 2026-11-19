@@ -1,0 +1,11 @@
+{
+  "evaluation": "In-sample replay of all calibration conditions",
+  "condition_count": 24,
+  "sample_count": 166992,
+  "mean_condition_mae_V": 0.02266744795907155,
+  "mean_condition_rmse_V": 0.034121015552239176,
+  "pooled_mae_V": 0.021985197866464246,
+  "pooled_rmse_V": 0.035279963893979215,
+  "pooled_bias_V": -0.00045322055598373903,
+  "max_absolute_error_V": 0.6963143527163176
+}

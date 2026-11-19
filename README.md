@@ -4,13 +4,13 @@
 <!-- markdownlint-disable no-duplicate-header -->
 
 <div align="center">
-  <img src="cpg_spmt_logo.png" width="60%" alt="CPG-SPMT: Control-oriented Parameter-Grouped Simplified Particle Model with Thermal effects" />
+  <img src="cpg_spmt_logo.png" width="60%" alt="CPG-SPMT: Control-oriented Parameter-Grouped Single Particle Model with Thermal effects" />
 </div>
 
 <div align="center" style="line-height: 1.5;">
   <a href="#"><img alt="Python" src="https://img.shields.io/badge/Python-3.x-blue.svg"/></a>
   <a href="LICENSE"><img alt="License: Apache-2.0" src="https://img.shields.io/badge/License-Apache%202.0-blue.svg"/></a>
-  <a href="#"><img alt="Status" src="https://img.shields.io/badge/Status-Validated-brightgreen.svg"/></a>
+  <a href="#"><img alt="Status" src="https://img.shields.io/badge/Status-BOLT_calibrated-brightgreen.svg"/></a>
   <a href="#"><img alt="Author" src="https://img.shields.io/badge/Author-Feng_Guo-orange.svg"/></a>
   <a href="#"><img alt="Citation Required" src="https://img.shields.io/badge/Citation-Required-red.svg"/></a>
 </div>
@@ -38,7 +38,7 @@
 
 ## Overview
 
-The **CPG-SPMT: Control-oriented Parameter-Grouped Single Particle Model with Thermal effects** uses a **parabolic approximation method** to discretize the SPM's governing PDE, thereby transforming the PDE into a set of ordinary differential equations (ODEs) that can be efficiently integrated over time. This approach reduces computational complexity while preserving the essential dynamics of the battery. Furthermore, the model applies **battery parameter grouping**, reducing the number of required parameters while maintaining accuracy. The model is designed to be both **observable** and **controllable**, which is crucial for applications in **battery state estimation** and **control design** within advanced battery management systems.
+The **CPG-SPMT: Control-oriented Parameter-Grouped Single Particle Model with Thermal effects** uses a **parabolic approximation method** to discretize the SPM's governing PDE, thereby transforming the PDE into a set of ordinary differential equations (ODEs) that can be efficiently integrated over time. This approach reduces computational complexity while preserving the essential dynamics of the battery. Furthermore, the model applies **battery parameter grouping**, reducing the number of required parameters while maintaining accuracy. Its compact state-space formulation supports **battery state estimation** and **control design** within battery management systems. The current and measured cell-temperature profiles are inputs; temperature dependence is represented through Arrhenius parameter scaling.
 
 
 
@@ -46,38 +46,40 @@ The **CPG-SPMT: Control-oriented Parameter-Grouped Single Particle Model with Th
 
 ### Core features
 
-- **PDE Discretization with Parabolic Approximation:**  
-  The **parabolic approximation method** is used to discretize the PDE that describes lithium diffusion in the electrode, converting it into a tractable **state-space model**. It achieves accuracy comparable to the implicit Euler FDM with 72 nodes while being over **100× faster** in computational efficiency (guo2025comparative).
+- **PDE Discretization with Parabolic Approximation:**
+  The **parabolic approximation method** is used to discretize the PDE that describes lithium diffusion in the electrode, converting it into a tractable **state-space model**. The implementation evaluates the resulting four-state system with an exact zero-order-hold update at a one-second sampling interval; see the [numerical method reference](#-citation).
 
-- **Battery Parameter Grouping:**  
+- **Battery Parameter Grouping:**
   The model groups related parameters, reducing the number of independent parameters required while maintaining accuracy in simulations. The CPG-SPMT model uses **14 parameters total**:
-  
-  **9 Core SPM Parameters:**
-  - `a_n_1`, `a_p_1`: Negative and positive electrode time constants at 25°C
-  - `b_n`, `b_p`: Negative and positive electrode capacity  
-  - `d_n_1`, `d_p_1`: Negative and positive electrode grouped parameters at 25°C
-  - `soc_n`, `soc_p`: Initial negative and positive electrode SOC values
-  - `R_ini_1`: Reference internal resistance at 25°C
-  
-  **5 Temperature-dependent Parameters (Activation Energies):**
-  - `E_1`, `E_2`: Activation energies for negative and positive electrode kinetics
-  - `E_3`, `E_4`: Activation energies for negative and positive electrode diffusion
-  - `E_5`: Activation energy for internal resistance
 
-- **Battery Simulation:**  
+  **9 Core SPM Parameters:**
+  - `a_n_1`, `a_p_1`: Grouped negative- and positive-electrode diffusion time parameters at 25°C [s]
+  - `b_n`, `b_p`: Grouped negative- and positive-electrode capacities [C per unit electrode coordinate]
+  - `d_n_1`, `d_p_1`: Grouped negative- and positive-electrode kinetic coefficients at 25°C [1/s]
+  - `soc_n`, `soc_p`: Initial negative- and positive-electrode lithium stoichiometries [-]
+  - `R_ini_1`: Grouped series resistance at 25°C [ohm]
+
+  **5 Temperature-dependent Parameters (Activation Energies):**
+  - `E_1`, `E_2`: Activation energies associated with `a_n`, `a_p` [J/mol]
+  - `E_3`, `E_4`: Activation energies associated with `d_n`, `d_p` [J/mol]
+  - `E_5`: Activation energy associated with `R_ini` [J/mol]
+
+- **Battery Simulation:**
   The model computes the **terminal voltage response** based on **two input profiles: current (A) and temperature (°C)**, making it suitable for simulating battery behavior under various operating conditions and thermal environments.
 
-- **State Estimation and Control:**  
-  The **observable** and **controllable** structure of the model enables its use for **real-time battery state estimation** and **control**, serving as a solid foundation for the design of **battery management systems (BMS)**.
+- **State Estimation and Control:**
+  The compact model is intended for **battery state estimation** and **control** applications in battery management systems (BMS).
 
 ---
 
 ## 📁 Project Structure
 
 ```
-SPM/
+CPG-SPMT/
 ├── cpg_spmt.py                    # Core model implementation
-├── model_validation.py            # Model validation script
+├── model_validation.py            # Replay and error analysis for all 24 fitted conditions
+├── calibration/                   # BOLT parameters, bounds, metrics and run summary
+├── references.bib                 # Model and BOLT method references
 ├── README.md                      # Project documentation
 ├── cpg_spmt_logo.png              # Project logo
 ├── LICENSE                        # Apache License 2.0
@@ -103,7 +105,7 @@ SPM/
 ## 🛠️ Installation Requirements
 
 ### System Requirements
-- Python 3.7+
+- Python 3.9+
 - Operating System: Windows, macOS, Linux
 
 ### Dependencies
@@ -112,8 +114,8 @@ pip install numpy scipy matplotlib pandas openpyxl
 ```
 
 ### Detailed Dependencies
-- **numpy**: Numerical computation and array operations
-- **scipy**: Scientific computing and signal processing
+- **numpy**: Numerical computation (the core model only requires NumPy)
+- **scipy**: Linear interpolation for experimental-data preprocessing
 - **matplotlib**: Data visualization and plotting
 - **pandas**: Data processing and analysis
 - **openpyxl**: Excel file reading
@@ -124,44 +126,33 @@ pip install numpy scipy matplotlib pandas openpyxl
 
 ### 1. Basic Usage with Experimental Data Validation
 
-This example demonstrates model validation using 30°C DST (Dynamic Stress Test) data, which represents excellent model performance with RMSE = 0.0216V and R² = 0.9859. The model takes **current profile (A)** and **temperature profile (°C)** as inputs and outputs **voltage response (V)**. 
+This example replays the 30°C DST (Dynamic Stress Test) data using the latest BOLT parameters. The model takes **current profile (A)** and **temperature profile (°C)** as inputs and outputs **voltage response (V)**.
 
 > **📖 Note**: If you use this model in your research, please [cite the related publications](#-citation).
 
 ```python
+from pathlib import Path
 from cpg_spmt import cpg_spmt
-import numpy as np
-import pandas as pd
+from model_validation import load_experimental_data, calculate_error_metrics
 import matplotlib.pyplot as plt
 
-# Load experimental data (30°C DST driving cycle)
-data_file = "data/A1-007-DST-US06-FUDS-30-20120820_modified.xlsx"
-exp_data = pd.read_excel(data_file, sheet_name="DST")
+# The model requires a uniform one-second grid. This loader applies the same
+# linear interpolation used for calibration, with the final endpoint excluded.
+data_file = Path("data/A1-007-DST-US06-FUDS-30-20120820_modified.xlsx")
+exp_data = load_experimental_data(data_file, sheet_name="DST", temperature=30)
+time_exp = exp_data["time"]
+current_exp = exp_data["current"]
+voltage_exp = exp_data["voltage"]
+temperature_exp = exp_data["temperature"]  # measured cell temperature [degrees C]
 
-# Extract experimental data
-time_exp = np.array(exp_data["Test_Time(s)"].tolist())
-current_exp = np.array(exp_data["Current(A)"].tolist())
-voltage_exp = np.array(exp_data["Voltage(V)"].tolist())
-temperature_exp = np.array(exp_data["Temperature (C)_1"].tolist())
-
-# Normalize time to start from zero
-time_exp = time_exp - time_exp[0]
-
-# Run CPG-SPMT model simulation
+# Positive current = charge; negative current = discharge.
 voltage_sim = cpg_spmt(current_exp, temperature_exp)
+metrics = calculate_error_metrics(voltage_exp, voltage_sim)
+rmse, mae, r_squared = metrics["RMSE"], metrics["MAE"], metrics["R_squared"]
 
-# Calculate validation metrics
-rmse = np.sqrt(np.mean((voltage_exp - voltage_sim) ** 2))
-mae = np.mean(np.abs(voltage_exp - voltage_sim))
-r_squared = 1 - np.sum((voltage_exp - voltage_sim) ** 2) / np.sum((voltage_exp - np.mean(voltage_exp)) ** 2)
-
-print(f"🔋 CPG-SPMT Model Validation Results (30°C DST)")
-print(f"📊 Test Duration: {time_exp[-1]:.0f} seconds ({time_exp[-1]/3600:.1f} hours)")
-print(f"📈 RMSE: {rmse:.4f} V")
-print(f"📉 MAE:  {mae:.4f} V") 
-print(f"📊 R²:   {r_squared:.4f}")
-print(f"⚡ Voltage Range - Exp: {voltage_exp.min():.3f}V - {voltage_exp.max():.3f}V")
-print(f"🔮 Voltage Range - Sim: {voltage_sim.min():.3f}V - {voltage_sim.max():.3f}V")
+print("CPG-SPMT BOLT Fit Replay (30°C DST)")
+print(f"Samples: {len(time_exp)}; duration: {time_exp[-1]:.0f} s")
+print(f"RMSE: {rmse:.6f} V; MAE: {mae:.6f} V; R²: {r_squared:.6f}")
 
 # Plot comparison with three subplots
 plt.figure(figsize=(14, 10))
@@ -171,7 +162,7 @@ plt.subplot(3, 1, 1)
 plt.plot(time_exp/3600, voltage_exp, 'k-', label='Experimental', linewidth=1.5, alpha=0.8)
 plt.plot(time_exp/3600, voltage_sim, 'r--', label='CPG-SPMT Model', linewidth=1.5)
 plt.ylabel('Voltage (V)')
-plt.title(f'30°C DST Validation - RMSE: {rmse:.4f}V, MAE: {mae:.4f}V, R²: {r_squared:.4f}')
+plt.title(f'30°C DST BOLT Fit Replay - RMSE: {rmse:.4f}V, MAE: {mae:.4f}V, R²: {r_squared:.4f}')
 plt.legend()
 plt.grid(True, alpha=0.3)
 
@@ -199,26 +190,20 @@ plt.show()
 
 <div align="center">
   <img src="validation_results/30C_DST_validation.png" width="90%" alt="CPG-SPMT Basic Usage Example - 30°C DST Validation" />
-  <p><em>Figure 1: CPG-SPMT Model Validation using 30°C DST Data</em></p>
+  <p><em>Figure 1: CPG-SPMT BOLT Fit Replay using 30°C DST Data</em></p>
 </div>
 
-The plot shows excellent agreement between experimental and simulated voltage (top), along with the DST current profile (middle) and temperature variations (bottom). The validation achieves RMSE = 0.0216V, MAE = 0.0147V, and R² = 0.9859.
+The plot compares measured and simulated voltage (top), the DST current profile (middle), and measured cell temperature (bottom). With the latest BOLT parameters, RMSE = 0.024776 V, MAE = 0.018466 V, and R² = 0.981361.
 
 ### 2. Custom Parameters
 
 ```python
-# Custom model parameters
-custom_params = {
-    'a_n_1': 2.0,      # Negative electrode diffusion parameter
-    'a_p_1': 2.0,      # Positive electrode diffusion parameter
-    'd_n_1': 1.0e-14,  # Negative electrode diffusion coefficient
-    'd_p_1': 1.0e-14,  # Positive electrode diffusion coefficient
-    'R_ini_1': 0.01,   # Initial internal resistance
-    # ... other parameters
-}
+from cpg_spmt import cpg_spmt, DEFAULT_PARAM, PARAMETER_NAMES
 
-# Run model with custom parameters
-voltage = cpg_spmt(current, temperature, param=custom_params)
+# Custom parameters use the same 14-element sequence as DEFAULT_PARAM.
+custom_params = list(DEFAULT_PARAM)
+custom_params[PARAMETER_NAMES.index("R_ini_1")] = 0.15  # ohm at 25°C
+voltage = cpg_spmt(current_exp, temperature_exp, param=custom_params)
 ```
 
 ### 3. Run Complete Validation
@@ -239,15 +224,49 @@ The validation script will:
 ## 🔬 Model Validation
 
 ### Validation Dataset
+
+We re-estimated the CPG-SPMT parameters using **BOLT (Batch-Optimized Local-to-Global Technique)**. All 24 conditions below were used jointly to estimate the 14 parameters, including one shared pair of initial electrode stoichiometries and five activation energies. The results in this repository therefore report **fitting errors on the calibration data**. The existing `model_validation.py` and `validation_results/` names are retained for compatibility.
+
 - **Data Source**: A1-007 lithium-ion battery experimental data
 - **Temperature Range**: -10°C, 0°C, 10°C, 20°C, 25°C, 30°C, 40°C, 50°C
 - **Driving Cycles**: DST, US06, FUDS
 - **Total Test Conditions**: 24 (8 temperatures × 3 conditions)
+- **Total Samples**: 166,992 on a uniform 1 s grid
+- **Temperature Input**: Measured cell-temperature profile, rather than the ambient-temperature label
+- **Current Convention**: Positive for charge, negative for discharge
+- **Voltage Output Limits**: 2.0–3.9 V; reported errors use this model output
+
+### BOLT Parameter Estimation
+
+The latest calibration used **64 TRF local refinements on 16 CPUs, arranged in four batches**. Diversified initial candidates were refined by nonlinear least squares using every voltage sample. All 64 refinements converged; the final candidate was selected by the lowest average MAE across the 24 conditions among converged, trajectory-feasible candidates. Both initial electrode stoichiometries were estimated in the range 0–1, with concentration-domain feasibility enforced throughout each trajectory.
+
+The reference temperature is **25°C**. The latest parameter values and estimation bounds are:
+
+| Parameter | Value | Unit | Lower bound | Upper bound |
+| --- | ---: | --- | ---: | ---: |
+| `a_n_1` | 3772.92828974 | s | 0 | 25000 |
+| `a_p_1` | 373.92618594 | s | 0 | 25000 |
+| `b_n` | 12351.5222115 | C | 3171.6 | 15840 |
+| `b_p` | 3974.54979324 | C | 3168 | 7920 |
+| `d_n_1` | 0.00415110645739 | 1/s | 1e-08 | 3.12 |
+| `d_p_1` | 0.312959720906 | 1/s | 1e-08 | 100 |
+| `soc_n` | 0.34736051269 | - | 0 | 1 |
+| `soc_p` | 0.000273326645769 | - | 0 | 1 |
+| `E_1` | 37506.041582 | J/mol | 0 | 200000 |
+| `E_2` | 46010.8390956 | J/mol | 0 | 200000 |
+| `E_3` | 125951.046392 | J/mol | 0 | 200000 |
+| `E_4` | 131036.914672 | J/mol | 0 | 200000 |
+| `E_5` | 3675.98172239 | J/mol | 0 | 200000 |
+| `R_ini_1` | 0.155310094196 | ohm | 0 | 0.5 |
+
+Capacity bounds are expressed in C (`Ah × 3600`): the negative-electrode upper bound is 4.4 Ah and the positive-electrode upper bound is 2.2 Ah. Full-precision values are in [`calibration/parameters.json`](calibration/parameters.json); bounds, units and short descriptions are in [`calibration/parameter_bounds.csv`](calibration/parameter_bounds.csv). The run settings and all 64 candidates are in [`fit_summary.json`](calibration/fit_summary.json) and [`multistart_results.csv`](calibration/multistart_results.csv).
+
+For the BOLT method, see Guo et al., *Applied Energy* 422 (2026), 128307, [doi:10.1016/j.apenergy.2026.128307](https://doi.org/10.1016/j.apenergy.2026.128307).
 
 ### Validation Metrics
 - **RMSE** (Root Mean Square Error): Voltage prediction accuracy
 - **MAE** (Mean Absolute Error): Mean absolute error
-- **R²** (Coefficient of Determination): Correlation coefficient
+- **R²** (Coefficient of Determination): Fraction of measured-voltage variance explained by the model
 
 
 ---
@@ -255,11 +274,14 @@ The validation script will:
 ## 📊 Validation Results
 
 ### 🎯 Overall Performance
-- **✅ Excellent Accuracy**: Average RMSE = 0.0331V (< 0.05V)
-- **📈 High Correlation**: Average R² = 0.9683 (> 0.96)
-- **🎪 Low Error Rate**: Average MAE = 0.0218V
-- **🌡️ Full Temperature Range**: Stable performance from -10°C to 50°C
+- **Average RMSE across conditions**: 0.034121 V
+- **Average MAE across conditions**: 0.022667 V
+- **Average R² across conditions**: 0.966491
+- **Pooled RMSE across all samples**: 0.035280 V
+- **Pooled MAE across all samples**: 0.021985 V
+- **Temperature Range**: Eight ambient-temperature conditions from -10°C to 50°C
 
+Condition averages assign equal weight to each condition; pooled metrics assign equal weight to each sample. These are fitting-data results.
 
 ### 📊 Comprehensive Validation Results
 
@@ -268,7 +290,7 @@ The validation script will:
   <p><em>Figure 2: CPG-SPMT Model Error Distribution Analysis Across All Temperature and Drive Cycle Conditions</em></p>
 </div>
 
-The error distribution analysis shows consistent performance across different temperatures and drive cycles, with excellent R² values (>0.96) and low RMSE values (<0.07V) throughout the entire operating range. The histograms demonstrate that most validation cases achieve very low errors, with mean RMSE = 0.0331V and mean MAE = 0.0218V.
+The plots summarize the fitting errors across all temperature and drive-cycle conditions. The mean condition RMSE is 0.034121 V and the mean condition MAE is 0.022667 V. Per-condition MAE, RMSE, bias, maximum absolute error and R² are available in [`calibration/condition_metrics.csv`](calibration/condition_metrics.csv); the 24 individual plots are in [`validation_results/`](validation_results/).
 
 ---
 
@@ -302,10 +324,13 @@ Main model implementation file containing:
 - `cpg_spmt()`: Main simulation function
 - `ocp_pos()`, `ocp_neg()`: Positive and negative electrode OCV functions
 - `update_temperature_dependent_parameters()`: Temperature parameter updates
-- `build_state_space_matrices()`: State-space matrix construction
+- `build_state_space_matrices()`: Continuous-time state-space matrices
+- `build_discrete_state_space_matrices()`: Exact discrete-time update, including zero time-parameter limits
+- `compute_overpotentials()`: Dimensionless Butler–Volmer arguments; electrode overpotential voltages are evaluated in `cpg_spmt()`
+- `DEFAULT_PARAM`: Latest full-precision 14-parameter BOLT estimate
 
 #### `model_validation.py`
-Model validation script with features:
+Calibration-data replay script with features:
 - Experimental data loading and preprocessing
 - Model simulation and error calculation
 - Results visualization and report generation
@@ -329,7 +354,10 @@ Validation results output folder:
 
 ## 📚 Citation
 
-If you use this model in your research or projects, please cite the following papers:
+If you use this model in your research or projects, please cite the relevant model papers and the BOLT method used for parameter estimation:
+
+**BOLT Parameter Estimation Method:**
+> Guo, F., Couto, L. D., Haghverdi, K., Trad, K., & Mulder, G. (2026). Rapid and robust parameter estimation for electrochemical battery models via BOLT: A batch-optimized local-to-global technique. *Applied Energy*, 422, 128307. https://doi.org/10.1016/j.apenergy.2026.128307
 
 **Software Implementation Reference:**
 > Guo, Feng, and Luis D. Couto. "CPG-SPMT: Control-Oriented Parameter-Grouped Single Particle Model with Thermal Effects for Lithium-Ion Batteries." *Computer Physics Communications* (2026): 110075. https://doi.org/10.1016/j.cpc.2026.110075
@@ -342,6 +370,17 @@ If you use this model in your research or projects, please cite the following pa
 
 **BibTeX Format:**
 ```bibtex
+@article{guo2026bolt,
+  title={Rapid and robust parameter estimation for electrochemical battery models via BOLT: A batch-optimized local-to-global technique},
+  author={Guo, Feng and Couto, Luis D. and Haghverdi, Keivan and Trad, Khiem and Mulder, Grietus},
+  journal={Applied Energy},
+  volume={422},
+  pages={128307},
+  year={2026},
+  publisher={Elsevier},
+  doi={10.1016/j.apenergy.2026.128307}
+}
+
 @article{guo2026cpg,
   title={CPG-SPMT: Control-Oriented Parameter-Grouped Single Particle Model with Thermal Effects for Lithium-Ion Batteries},
   author={Guo, Feng and Couto, Luis D.},
@@ -394,11 +433,11 @@ This project is licensed under the **[Apache License 2.0](LICENSE)**.
 
 ## 📧 Contact
 
-**Author**: Feng Guo  
+**Author**: Feng Guo<br>
 
-**Email**: feng.guo [at] vito [dot] be  
+**Email**: feng.guo [at] vito [dot] be<br>
 
-**Homepage**: [franksuperg.github.io/feng-guo-academic](https://franksuperg.github.io/feng-guo-academic/)  
+**Homepage**: [franksuperg.github.io/feng-guo-academic](https://franksuperg.github.io/feng-guo-academic/)<br>
 
 **Google Scholar**: [scholar.google.com/citations?user=z2SHUxkAAAAJ&hl=en](https://scholar.google.com/citations?user=z2SHUxkAAAAJ&hl=en)
 

@@ -59,3 +59,23 @@ references:
     publisher:
       name: "Elsevier"
     doi: "10.1016/j.jpowsour.2025.237365"
+  - type: article
+    authors:
+      - family-names: Guo
+        given-names: Feng
+      - family-names: Couto
+        given-names: Luis D.
+      - family-names: Haghverdi
+        given-names: Keivan
+      - family-names: Trad
+        given-names: Khiem
+      - family-names: Mulder
+        given-names: Grietus
+    title: "Rapid and robust parameter estimation for electrochemical battery models via BOLT: A batch-optimized local-to-global technique"
+    journal: "Applied Energy"
+    volume: 422
+    pages: "128307"
+    year: 2026
+    publisher:
+      name: "Elsevier"
+    doi: "10.1016/j.apenergy.2026.128307"

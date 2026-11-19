@@ -1,0 +1,15 @@
+parameter,value,unit,lower_bound,upper_bound,description
+a_n_1,3772.9282897370335,s,0.0,25000.0,Negative-electrode grouped diffusion time parameter at 25 C
+a_p_1,373.9261859400505,s,0.0,25000.0,Positive-electrode grouped diffusion time parameter at 25 C
+b_n,12351.52221150387,C,3171.6,15840.000000000002,Negative-electrode grouped capacity per unit electrode coordinate
+b_p,3974.5497932350754,C,3168.0,7920.000000000001,Positive-electrode grouped capacity per unit electrode coordinate
+d_n_1,0.004151106457385239,1/s,1e-08,3.12,Negative-electrode grouped kinetic coefficient at 25 C
+d_p_1,0.31295972090644797,1/s,1e-08,100.0,Positive-electrode grouped kinetic coefficient at 25 C
+soc_n,0.34736051269027135,-,0.0,1.0,Initial negative-electrode lithium stoichiometry
+soc_p,0.0002733266457685156,-,0.0,1.0,Initial positive-electrode lithium stoichiometry
+E_1,37506.041582041405,J/mol,0.0,200000.0,Activation energy associated with a_n
+E_2,46010.83909563133,J/mol,0.0,200000.0,Activation energy associated with a_p
+E_3,125951.04639185766,J/mol,0.0,200000.0,Activation energy associated with d_n
+E_4,131036.91467234145,J/mol,0.0,200000.0,Activation energy associated with d_p
+E_5,3675.9817223888035,J/mol,0.0,200000.0,Activation energy associated with R_ini
+R_ini_1,0.15531009419630287,ohm,0.0,0.5,Grouped series resistance at 25 C

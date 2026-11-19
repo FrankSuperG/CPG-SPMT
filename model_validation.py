@@ -4,9 +4,11 @@
 CPG-SPMT Model Validation Script
 ================================
 
-This script validates the CPG-SPMT battery model against experimental data
-from various temperature conditions (-10°C to 50°C) and different drive cycles
-(DST, US06, FUDS).
+This script replays the BOLT-calibrated CPG-SPMT model on all 24 fitted
+conditions: eight ambient temperatures (-10 to 50 degrees C) and three drive
+cycles (DST, US06, FUDS). All samples were used for calibration, so the reported
+errors describe the fit on these data. Measured cell temperature is the input.
+Existing function names and output filenames are retained for compatibility.
 
 Copyright 2025 Feng Guo
 
@@ -30,42 +32,19 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from scipy.interpolate import interp1d
-import os
+import json
 from pathlib import Path
-import warnings
-warnings.filterwarnings('ignore')
 
-# Import the CPG-SPMT model
-import importlib.util
-import sys
-
-# Load the CPG-SPMT module
-spec = importlib.util.spec_from_file_location("cpg_spmt_module", "cpg_spmt.py")
-cpg_spmt_module = importlib.util.module_from_spec(spec)
-sys.modules["cpg_spmt_module"] = cpg_spmt_module
-spec.loader.exec_module(cpg_spmt_module)
-
-# Import the function
-cpg_spmt = cpg_spmt_module.cpg_spmt
+from cpg_spmt import cpg_spmt
 
 
 def load_experimental_data(file_path, sheet_name, temperature):
-    """
-    Load and preprocess experimental battery data from Excel files.
-    
-    Parameters
-    ----------
-    file_path : str
-        Path to the Excel file containing experimental data.
-    sheet_name : str
-        Name of the sheet to load (e.g., 'DST', 'US06', 'FUDS').
-    temperature : float
-        Operating temperature in Celsius.
-        
-    Returns
-    -------
-    dict
-        Dictionary containing processed experimental data.
+    """Load a fitted worksheet and linearly interpolate to a one-second grid.
+
+    temperature is the ambient-condition label in degrees C. The measured
+    cell-temperature column is required and supplies the model input.
+    Source voltage samples in (1.5, 4.5) V are retained, matching calibration.
+    The final source endpoint is excluded by the uniform-grid convention.
     """
     try:
         # Read experimental data
@@ -76,12 +55,9 @@ def load_experimental_data(file_path, sheet_name, temperature):
         voltage = np.array(df["Voltage(V)"].tolist())
         current = np.array(df["Current(A)"].tolist())
         
-        # Check if temperature column exists, otherwise use provided temperature
-        if "Temperature (C)_1" in df.columns:
-            temp_data = np.array(df["Temperature (C)_1"].tolist())
-        else:
-            temp_data = np.full(len(time), temperature)
-        
+        # Use the same measured temperature input as the joint calibration.
+        temp_data = np.array(df["Temperature (C)_1"].tolist())
+
         # Remove invalid data points
         valid_mask = (voltage > 1.5) & (voltage < 4.5) & np.isfinite(voltage) & np.isfinite(current)
         
@@ -91,6 +67,11 @@ def load_experimental_data(file_path, sheet_name, temperature):
         current_clean = current[valid_mask]
         temp_clean = temp_data[valid_mask]
         
+        if len(time_clean) < 2 or not np.isfinite(time_clean).all() or not np.isfinite(temp_clean).all():
+            raise ValueError('Require at least two finite time/temperature samples')
+        if np.any(np.diff(time_clean) <= 0):
+            raise ValueError('Source time must be strictly increasing')
+
         # Normalize time to start from zero
         time_clean = time_clean - time_clean[0]
         
@@ -104,15 +85,15 @@ def load_experimental_data(file_path, sheet_name, temperature):
             'voltage': voltage_interp,
             'current': current_interp,
             'temperature': temp_interp,
-            'duration': len(time_interp),
+            'duration': float(time_interp[-1] - time_interp[0]),
+            'samples': len(time_interp),
             'file_name': Path(file_path).name,
             'sheet_name': sheet_name,
             'operating_temp': temperature
         }
         
     except Exception as e:
-        print(f"❌ Error loading {file_path} - {sheet_name}: {str(e)}")
-        return None
+        raise ValueError(f'Cannot load {file_path} - {sheet_name}: {e}') from e
 
 
 def interpolate_to_uniform_grid(time, voltage, current, temperature, dt=1.0):
@@ -163,10 +144,13 @@ def calculate_error_metrics(y_true, y_pred):
     dict
         Dictionary containing error metrics.
     """
-    # Ensure arrays have the same length
-    min_len = min(len(y_true), len(y_pred))
-    y_true = y_true[:min_len]
-    y_pred = y_pred[:min_len]
+    # Score every sample; a shape mismatch must not silently discard data.
+    y_true = np.asarray(y_true, dtype=float)
+    y_pred = np.asarray(y_pred, dtype=float)
+    if y_true.ndim != 1 or y_true.shape != y_pred.shape or y_true.size == 0:
+        raise ValueError('Require nonempty, equal-length one-dimensional arrays')
+    if not np.isfinite(y_true).all() or not np.isfinite(y_pred).all():
+        raise ValueError('Metric inputs must be finite')
     
     # Calculate error metrics
     mae = np.mean(np.abs(y_true - y_pred))
@@ -179,6 +163,7 @@ def calculate_error_metrics(y_true, y_pred):
         'RMSE': rmse,
         'MAPE': mape,
         'Max_Error': max_error,
+        'Bias': np.mean(y_pred - y_true),
         'R_squared': calculate_r_squared(y_true, y_pred)
     }
 
@@ -187,7 +172,7 @@ def calculate_r_squared(y_true, y_pred):
     """Calculate R-squared coefficient of determination."""
     ss_res = np.sum((y_true - y_pred) ** 2)
     ss_tot = np.sum((y_true - np.mean(y_true)) ** 2)
-    return 1 - (ss_res / ss_tot) if ss_tot != 0 else 0
+    return 1 - (ss_res / ss_tot) if ss_tot != 0 else np.nan
 
 
 def validate_single_condition(data_file, sheet_name, temperature):
@@ -208,7 +193,7 @@ def validate_single_condition(data_file, sheet_name, temperature):
     dict
         Validation results.
     """
-    print(f"🔄 Validating {temperature}°C - {sheet_name}...")
+    print(f"🔄 Replaying {temperature}°C - {sheet_name}...")
     
     # Load experimental data
     exp_data = load_experimental_data(data_file, sheet_name, temperature)
@@ -219,8 +204,7 @@ def validate_single_condition(data_file, sheet_name, temperature):
     try:
         model_voltage = cpg_spmt(exp_data['current'], exp_data['temperature'])
     except Exception as e:
-        print(f"❌ Model simulation failed: {str(e)}")
-        return None
+        raise RuntimeError(f'Model simulation failed: {e}') from e
     
     # Calculate error metrics
     error_metrics = calculate_error_metrics(exp_data['voltage'], model_voltage)
@@ -261,7 +245,7 @@ def create_individual_plot(result, output_dir):
     
     # Create figure with 3 subplots
     fig, (ax1, ax2, ax3) = plt.subplots(3, 1, figsize=(12, 10))
-    fig.suptitle(f'{temp}°C - {cycle} Drive Cycle Validation\n'
+    fig.suptitle(f'{temp}°C - {cycle} Drive Cycle BOLT Fit Replay\n'
                 f'RMSE: {rmse:.4f}V | MAE: {mae:.4f}V | R²: {r2:.4f}', 
                 fontsize=14, fontweight='bold')
     
@@ -318,7 +302,7 @@ def create_error_distribution_plots(results_list, output_dir):
     
     # Create RMSE and MAE distribution plots
     fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, figsize=(16, 12))
-    fig.suptitle('CPG-SPMT Model Error Distribution Analysis', fontsize=16, fontweight='bold')
+    fig.suptitle('CPG-SPMT BOLT Fitting Error Distribution', fontsize=16, fontweight='bold')
     
     # Prepare data for plotting
     rmse_data = {cycle: [] for cycle in drive_cycles}
@@ -334,8 +318,7 @@ def create_error_distribution_plots(results_list, output_dir):
                 rmse_data[cycle].append(result['error_metrics']['RMSE'])
                 mae_data[cycle].append(result['error_metrics']['MAE'])
             else:
-                rmse_data[cycle].append(0)
-                mae_data[cycle].append(0)
+                raise ValueError(f'Missing fitted condition: {temp} C / {cycle}')
     
     # Plot RMSE by temperature
     x_pos = np.arange(len(temperatures))
@@ -421,7 +404,7 @@ def plot_validation_results(results_list, output_dir, save_plots=True):
     # Create figure for voltage comparison plots
     n_results = len(results_list)
     fig, axes = plt.subplots(2, 2, figsize=(16, 12))
-    fig.suptitle('CPG-SPMT Model Validation Results', fontsize=16, fontweight='bold')
+    fig.suptitle('CPG-SPMT BOLT Fit Replay', fontsize=16, fontweight='bold')
     
     colors = ['blue', 'red', 'green', 'orange', 'purple', 'brown', 'pink', 'gray']
     
@@ -467,7 +450,7 @@ def generate_validation_report(results_list, output_dir):
         return
     
     print("\n" + "="*80)
-    print("📊 CPG-SPMT MODEL VALIDATION REPORT")
+    print("📊 CPG-SPMT BOLT FIT REPLAY REPORT")
     print("="*80)
     
     # Summary table
@@ -502,17 +485,9 @@ def generate_validation_report(results_list, output_dir):
     print(f"{'Average':<12} {'':<12} {avg_rmse:<10.4f} {avg_mae:<10.4f} {avg_r2:<8.4f}")
     print("="*80)
     
-    # Performance assessment
-    print("\n🎯 MODEL PERFORMANCE ASSESSMENT:")
-    if avg_rmse < 0.05:
-        print("✅ Excellent accuracy (RMSE < 0.05V)")
-    elif avg_rmse < 0.1:
-        print("✅ Good accuracy (RMSE < 0.1V)")
-    elif avg_rmse < 0.2:
-        print("⚠️  Acceptable accuracy (RMSE < 0.2V)")
-    else:
-        print("❌ Poor accuracy (RMSE > 0.2V)")
-    
+    # All conditions are fitted data; report numerical summaries directly.
+    print("\nAll reported errors are fitting errors on the calibration data.")
+
     print(f"\n📈 Key Statistics:")
     print(f"   • Average RMSE: {avg_rmse:.4f} V")
     print(f"   • Average MAE:  {avg_mae:.4f} V")
@@ -529,7 +504,9 @@ def generate_validation_report(results_list, output_dir):
             'R_squared': r['error_metrics']['R_squared'],
             'MAPE_percent': r['error_metrics']['MAPE'],
             'Max_Error_V': r['error_metrics']['Max_Error'],
-            'Duration_s': r['duration']
+            'Duration_s': r['duration'],
+            'Samples': r['experimental_data']['samples'],
+            'Bias_V': r['error_metrics']['Bias']
         }
         for r in results_list
     ])
@@ -551,6 +528,8 @@ def generate_validation_report(results_list, output_dir):
             'MAPE_percent': r['error_metrics']['MAPE'],
             'Max_Error_V': r['error_metrics']['Max_Error'],
             'Duration_s': r['duration'],
+            'Samples': r['experimental_data']['samples'],
+            'Bias_V': r['error_metrics']['Bias'],
             'File_Name': r['experimental_data']['file_name']
         })
     
@@ -559,14 +538,32 @@ def generate_validation_report(results_list, output_dir):
     detailed_df.to_csv(detailed_csv_path, index=False)
     print(f"💾 Detailed error data saved to: {detailed_csv_path}")
 
+    residual = np.concatenate([
+        r['model_voltage'] - r['experimental_data']['voltage'] for r in results_list
+    ])
+    summary = {
+        'evaluation': 'In-sample replay of all calibration conditions',
+        'condition_count': len(results_list),
+        'sample_count': int(residual.size),
+        'mean_condition_mae_V': float(avg_mae),
+        'mean_condition_rmse_V': float(avg_rmse),
+        'pooled_mae_V': float(np.mean(np.abs(residual))),
+        'pooled_rmse_V': float(np.sqrt(np.mean(residual ** 2))),
+        'pooled_bias_V': float(np.mean(residual)),
+        'max_absolute_error_V': float(np.max(np.abs(residual))),
+    }
+    (output_dir / 'summary_metrics.json').write_text(
+        json.dumps(summary, indent=2) + '\n', encoding='utf-8'
+    )
+
 
 def main():
     """Main validation function."""
-    print("🚀 Starting CPG-SPMT Model Validation")
+    print("🚀 Starting CPG-SPMT BOLT Fit Replay")
     print("="*50)
     
     # Configuration
-    DATA_DIR = Path("data")
+    DATA_DIR = Path(__file__).resolve().parent / 'data'
     TEMPERATURES = [-10, 0, 10, 20, 25, 30, 40, 50]
     DRIVE_CYCLES = ["DST", "US06", "FUDS"]
     
@@ -583,18 +580,17 @@ def main():
     }
     
     # Create output directory for results
-    OUTPUT_DIR = Path("validation_results")
+    OUTPUT_DIR = Path(__file__).resolve().parent / 'validation_results'
     OUTPUT_DIR.mkdir(exist_ok=True)
     
     # Run validation for all conditions in temperature order
     all_results = []
     
-    print("\n🔄 Running validation for all temperature conditions (-10°C to 50°C)...")
+    print("\n🔄 Replaying all fitted temperature conditions (-10°C to 50°C)...")
     for temp in TEMPERATURES:
         data_file = DATA_DIR / FILE_MAPPING[temp]
         if not data_file.exists():
-            print(f"⚠️  File not found: {data_file}")
-            continue
+            raise FileNotFoundError(data_file)
         
         print(f"\n📊 Processing {temp}°C conditions...")
         for cycle in DRIVE_CYCLES:
@@ -604,9 +600,12 @@ def main():
                 # Create individual plot for each condition
                 create_individual_plot(result, OUTPUT_DIR)
     
+    if len(all_results) != 24:
+        raise RuntimeError(f'Expected 24 fitted conditions, got {len(all_results)}')
+
     # Generate comprehensive results
     if all_results:
-        print(f"\n✅ Validation completed for {len(all_results)} conditions")
+        print(f"\n✅ BOLT fit replay completed for {len(all_results)} conditions")
         
         # Generate validation report and save to output directory
         generate_validation_report(all_results, OUTPUT_DIR)
@@ -627,4 +626,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main() 
+    main()
